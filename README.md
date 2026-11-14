@@ -260,3 +260,7 @@ cd android
 | AndroidX WebKit 1.12.1                   | APK에서 앱 안의 화면 불러오기                   | Apache License 2.0                                                                         |
 | Hyundai Ioniq 5 N (2025) 3D 모델         | 차량 이미지와 시작 화면 영상을 렌더링           | Sketchfab, geyges 제작, Sketchfab Standard License. 렌더링 결과만 포함                     |
 | Poly Haven HDRI                          | 낮 화면 시작 영상의 하늘 조명                   | CC0                                                                                        |
+
+## 9. 저작권
+
+카품의 기획, 화면 디자인, 소스 코드, 시연 영상의 저작권은 티키타카(TikiTa_Car) 팀에 있습니다. 이 저장소는 현대자동차그룹 차량용 앱 개발 공모전의 심사와 시연 확인을 위해 공개한 것으로, 팀의 허락 없이 복제, 수정, 재배포하거나 다른 공모전과 서비스에 사용할 수 없습니다. 외부 자료는 [8. 외부 자료 및 라이선스](#8-외부-자료-및-라이선스)에 적힌 각 라이선스를 따르며, 자세한 내용은 [`LICENSE`](LICENSE)에 있습니다.
