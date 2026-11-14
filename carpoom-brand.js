@@ -11,7 +11,7 @@
   else root.CarpoomBrand = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-  const TILT = 0; // 타원은 반듯하게(사용자 확정)
+  const TILT = 0; // 타원은 반듯하게 둔다
   const SKEW = -14; // H 이탤릭 기울기(도)
   function emblem(id, cls, label) {
     id = String(id || 'e').replace(/[^a-zA-Z0-9_-]/g, '');

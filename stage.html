@@ -129,13 +129,92 @@
   }
   .phone iframe {
     width: 390px;
-    height: 844px;
+    height: 812px;
+    top: calc(32px * var(--ps));
     transform: scale(var(--ps));
+  }
+  /* 휴대폰 상태줄: 시계는 차량 화면과 같은 시각을 보여 준다 */
+  .pstat {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 390px;
+    height: 32px;
+    transform: scale(var(--ps));
+    transform-origin: 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 26px 0 30px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    z-index: 3;
+  }
+  .pstat.light {
+    background: #ffffff;
+    color: #101418;
+  }
+  .pstat.dark {
+    background: #0b0d10;
+    color: #f2f4f7;
+  }
+  .pstat .ic {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pstat svg {
+    height: 13px;
+    width: auto;
+    fill: currentColor;
   }
   .carframe iframe {
     width: 1600px;
     height: 900px;
     transform: scale(var(--cs));
+  }
+  /* Pleos 틀 모드(?frame=폴더/): 에뮬레이터에서 캡처한 Pleos Connect 화면(2560×1440) 위, 앱 창 자리에 차량 앱을 띄운다.
+     주행 중에는 왼쪽 주행 정보 화면을 주행 영상으로 바꾸고, 설정 적용 뒤에는 조수석 열선이 켜진 화면으로 바꾼다 */
+  .pf {
+    position: absolute;
+    inset: 0;
+    display: none;
+  }
+  .stage.framed .pf {
+    display: block;
+  }
+  .pf img,
+  .pf video {
+    position: absolute;
+    display: block;
+    transition: opacity 0.45s;
+  }
+  .pf .full {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .pf .left {
+    left: 0;
+    top: calc(100% * 10 / 1440);
+    width: calc(100% * 852 / 2560);
+    height: calc(100% * 1290 / 1440);
+    object-fit: fill;
+  }
+  .pf .off {
+    opacity: 0;
+  }
+  .stage.framed .carframe .scr {
+    border-radius: 10px;
+  }
+  .stage.framed .carframe iframe {
+    width: 1682px;
+    height: 1210px;
+    left: calc(1600px * var(--cs) * 853 / 2560);
+    top: calc(900px * var(--cs) * 90 / 1440);
+    transform: scale(calc(1600 * var(--cs) / 2560));
+    z-index: 2;
   }
   .links {
     position: absolute;
@@ -158,6 +237,29 @@
   <div class="dev" style="left: 40px; top: 150px">
     <div class="phone">
       <div class="scr">
+        <div class="pstat light">
+          <span class="pclock"></span
+          ><span class="ic"
+            ><svg viewBox="0 0 18 12">
+              <rect x="0" y="8" width="3" height="4" rx="1" />
+              <rect x="5" y="5" width="3" height="7" rx="1" />
+              <rect x="10" y="2.5" width="3" height="9.5" rx="1" />
+              <rect x="15" y="0" width="3" height="12" rx="1" /></svg
+            ><svg viewBox="0 0 26 12">
+              <rect
+                x="0.6"
+                y="0.6"
+                width="21.8"
+                height="10.8"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect x="2.3" y="2.3" width="15" height="7.4" rx="1.6" />
+              <rect x="23.6" y="3.8" width="2" height="4.4" rx="1" /></svg
+          ></span>
+        </div>
         <iframe
           id="f-dad"
           title="아버지 휴대폰"
@@ -170,6 +272,29 @@
   <div class="dev" style="left: 402px; top: 150px">
     <div class="phone">
       <div class="scr">
+        <div class="pstat dark">
+          <span class="pclock"></span
+          ><span class="ic"
+            ><svg viewBox="0 0 18 12">
+              <rect x="0" y="8" width="3" height="4" rx="1" />
+              <rect x="5" y="5" width="3" height="7" rx="1" />
+              <rect x="10" y="2.5" width="3" height="9.5" rx="1" />
+              <rect x="15" y="0" width="3" height="12" rx="1" /></svg
+            ><svg viewBox="0 0 26 12">
+              <rect
+                x="0.6"
+                y="0.6"
+                width="21.8"
+                height="10.8"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect x="2.3" y="2.3" width="15" height="7.4" rx="1.6" />
+              <rect x="23.6" y="3.8" width="2" height="4.4" rx="1" /></svg
+          ></span>
+        </div>
         <iframe id="f-kid" title="딸 휴대폰" src="carpoom.html?user=u_haneul&amp;nosplash=1&amp;theme=dark"></iframe>
       </div>
     </div>
@@ -178,14 +303,20 @@
   <div class="dev" style="left: 780px; top: 192px">
     <div class="carframe">
       <div class="scr">
+        <div class="pf" id="pf">
+          <img class="full" id="pf-park" alt="" />
+          <img class="full off" id="pf-heat" alt="" />
+          <img class="full off" id="pf-toast" alt="" />
+          <video class="left off" id="pf-drive" muted loop playsinline preload="auto"></video>
+        </div>
         <iframe
           id="f-car"
           title="차량 Pleos 화면"
-          src="pleos.html?vehicle=v_ioniq6&amp;theme=dark&amp;embed=1"
+          src="pleos.html?vehicle=v_ioniq5&amp;theme=dark&amp;embed=1"
         ></iframe>
       </div>
     </div>
-    <div class="cap"><b>지민 (운전자, 워킹맘)</b> 아이오닉 6 Pleos Connect</div>
+    <div class="cap"><b>지민 (운전자, 워킹맘)</b> 아이오닉 5 Pleos Connect</div>
   </div>
   <div class="links">
     각 화면은 따로 열 수도 있습니다: <a href="carpoom.html" target="_blank">모바일 앱</a>,
@@ -206,12 +337,57 @@
     }
     addEventListener('resize', fit);
     fit();
+    function tick() {
+      const d = new Date();
+      const t = (d.getHours() % 12 || 12) + ':' + String(d.getMinutes()).padStart(2, '0');
+      document.querySelectorAll('.pclock').forEach((e) => (e.textContent = t));
+    }
+    tick();
+    setInterval(tick, 5000);
+    // Pleos 틀 모드
+    const FRAME = new URLSearchParams(location.search).get('frame');
+    const pf = {};
+    if (FRAME) {
+      stage.classList.add('framed');
+      const car = document.getElementById('f-car');
+      car.src = car.getAttribute('src').replace('embed=1', 'app=1');
+      ['park', 'heat', 'toast', 'drive'].forEach((k) => (pf[k] = document.getElementById('pf-' + k)));
+      pf.park.src = FRAME + 'park.png';
+      pf.heat.src = FRAME + 'park_heat.png';
+      pf.toast.src = FRAME + 'park_heat_toast.png';
+      pf.drive.src = FRAME + 'drive.mp4';
+    }
+    let pfDriving = false,
+      pfHeat = false,
+      pfDriveOff = 0;
+    function pfSetDriving(on) {
+      if (!FRAME || on === pfDriving) return;
+      pfDriving = on;
+      clearTimeout(pfDriveOff);
+      if (on) {
+        const p = pf.drive.play();
+        if (p && p.catch) p.catch(() => {});
+        pf.drive.classList.remove('off');
+      } else {
+        pf.drive.classList.add('off');
+        pfDriveOff = setTimeout(() => pf.drive.pause(), 500);
+      }
+    }
+    function pfSetHeat(on) {
+      if (!FRAME || on === pfHeat) return;
+      pfHeat = on;
+      // 열선이 켜지는 순간 Pleos가 띄우는 '동승석 열선 시트' 알림을 잠깐 보여 준 뒤, 열선 아이콘이 켜진 화면으로 둔다
+      pf.toast.classList.toggle('off', !on);
+      pf.heat.classList.toggle('off', !on);
+      if (on) setTimeout(() => pf.toast.classList.add('off'), 2600);
+    }
     // 한 화면에서 바뀐 상태를 나머지 화면으로 전달한다(가장 최신 rev만)
     let latest = null;
     addEventListener('message', (e) => {
       const d = e.data;
       if (!d) return;
       if (d.__carpoomLive) {
+        if (d.data && d.data.type === 'car') pfSetDriving(!!d.data.driving);
         frames().forEach((f) => {
           if (f.contentWindow !== e.source) {
             try {
@@ -222,6 +398,9 @@
         return;
       }
       if (d.__carpoom && d.state) {
+        pfSetHeat(
+          Object.values(d.state.bookings || {}).some((b) => b.userId === 'u_youngsoo' && b.status === 'COMPLETED'),
+        );
         if (!latest || (d.state.rev || 0) > (latest.state.rev || 0)) latest = d;
         frames().forEach((f) => {
           if (f.contentWindow !== e.source) {

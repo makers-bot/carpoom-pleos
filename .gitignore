@@ -5,6 +5,7 @@ node_modules/
 test/shots/
 demo/
 *.mp4
+!assets/pleos/intro-*.mp4
 
 # 안드로이드 빌드 산출물과 PC별 설정, 서명 키(키와 비밀번호는 절대 올리지 않는다)
 android/.gradle/

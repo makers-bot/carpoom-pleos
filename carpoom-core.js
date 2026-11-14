@@ -100,7 +100,7 @@
 
   function emptyState() {
     return {
-      version: 3,
+      version: 4,
       rev: 0, // 상태 변경 번호. 모바일, Pleos 화면 사이 동기화에서 더 최신 상태를 고르는 기준
       demoMode: true,
       users: {},
@@ -1049,7 +1049,7 @@
     /**
      * 데모 데이터 — 시나리오 속 가족.
      * 지민 = 워킹맘 A씨(운전자), 영수 = 아버지(데이케어센터, 조수석 기억), 하늘 = 초등학생 딸(학교, 픽업마다 좌석 선택)
-     * 차량은 Pleos 개발자 사이트(document.pleos.ai) 공식 디자인 가이드의 기준 차량인 아이오닉 6로 통일한다.
+     * 차량은 Pleos 개발자 사이트(document.pleos.ai) 공식 디자인 가이드의 기준 차량인 아이오닉 5로 통일한다.
      * 화면의 차 이미지도 같은 가이드에서 가져온다. 두 대는 번호판으로 구분한다.
      * 차량별 지원 항목은 체험용 가정이며 실제 트림과 다를 수 있다(실제 앱은 Vehicle SDK의 지원 여부 확인 결과를 쓴다).
      */
@@ -1079,12 +1079,12 @@
         { id: 'RR', label: '뒷좌석 오른쪽', row: 2 },
       ];
       const v1 = {
-        id: 'v_ioniq6',
+        id: 'v_ioniq5',
         ownerId: 'u_jimin',
-        name: '아이오닉 6',
+        name: '아이오닉 5',
         model: '',
         plate: '12가 3456',
-        body: 'ioniq6',
+        body: 'ioniq5',
         capabilities: { seatPosition: true, recline: true, heater: true, climate: true, window: true },
         seats: seats(),
         members: {
@@ -1093,12 +1093,12 @@
         },
       };
       const v2 = {
-        id: 'v_ioniq6b',
+        id: 'v_ioniq5b',
         ownerId: 'u_jimin',
-        name: '아이오닉 6',
+        name: '아이오닉 5',
         model: '',
         plate: '34나 7890',
-        body: 'ioniq6',
+        body: 'ioniq5',
         capabilities: { seatPosition: true, recline: true, heater: false, climate: false, window: true },
         seats: seats(),
         members: {
@@ -1108,7 +1108,7 @@
       this.state.vehicles[v1.id] = v1;
       this.state.vehicles[v2.id] = v2;
 
-      const ys = this.getProfile('u_youngsoo', 'v_ioniq6');
+      const ys = this.getProfile('u_youngsoo', 'v_ioniq5');
       ys.saved = Object.assign(DEFAULT_PROFILE(), {
         seatPosition: 65,
         recline: 45,
@@ -1118,7 +1118,7 @@
         rememberSeat: true,
       });
       ys.savedAt = now;
-      const hn = this.getProfile('u_haneul', 'v_ioniq6');
+      const hn = this.getProfile('u_haneul', 'v_ioniq5');
       hn.saved = Object.assign(DEFAULT_PROFILE(), {
         seatPosition: 30,
         recline: 20,

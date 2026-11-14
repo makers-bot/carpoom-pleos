@@ -111,10 +111,19 @@ THE SOFTWARE.
 ================================================================
 
 ================================================================
-9. 차량 이미지 — Pleos Connect 디자인 가이드 (assets/pleos/car-top.webp, car-34.webp)
-   출처: https://document.pleos.ai/img/Pleos_Connect_display_guide_215.fig
-         (Pleos Playground가 Pleos Connect 앱 개발자에게 제공하는 공식 디자인 자료)
-   차종: 아이오닉 6(가이드의 모든 차 렌더링이 이 차종). 앱의 차량 이름도 아이오닉 6로 맞춤
-   변경: 차량 부분만 잘라 WebP로 줄임. Pleos 앱의 위에서 본 좌석 화면과 로그인 화면에 사용
-   권리: 현대자동차그룹. 공모전 Pleos 앱 시연 목적으로만 사용
+9. 차량 이미지와 시작 화면 영상 — 아이오닉 5 3D 모델 렌더링
+   (assets/pleos/car-top.webp, car-34.webp, intro-night.mp4, intro-day.mp4)
+   모델: "Hyundai Ioniq 5 N (2025)" by geyges
+         https://sketchfab.com/3d-models/hyundai-ioniq-5-n-2025-2b6248922919498c8feeb65dba128470
+   라이선스: Sketchfab Standard License(상업적, 비상업적 사용과 파생 작업 가능, 모델 파일 재배포 불가)
+   사용: Blender로 직접 렌더링한 이미지와 영상만 넣었고, 3D 모델 파일은 저장소에 포함하지 않는다.
+         밤 화면 영상은 엑스레이 재질로, 낮 화면 영상은 흰 배경과 하늘 조명으로 렌더링했다.
+   하늘 조명: Poly Haven "Qwantani Afternoon (Pure Sky)" HDRI, CC0 (https://polyhaven.com/a/qwantani_afternoon_puresky)
+   차종은 Pleos Connect Emulator의 기본 차량과 같은 아이오닉 5로 맞췄다.
+================================================================
+
+================================================================
+10. 안드로이드 앱 — AndroidX WebKit 1.12.1 (APK 안에 포함)
+   원본: https://developer.android.com/jetpack/androidx/releases/webkit
+   라이선스: Apache License 2.0
 ================================================================

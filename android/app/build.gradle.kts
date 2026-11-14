@@ -17,6 +17,8 @@ val copyWeb by tasks.registering(Copy::class) {
         }
     }
     from(webPages)
+    // 시작 화면 영상(낮, 밤)
+    from(rootProject.file("../assets/pleos")) { include("intro-*.mp4") }
     into(webAssets)
 }
 

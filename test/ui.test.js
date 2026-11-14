@@ -128,14 +128,14 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   // 화면 우회 시도: 코어 직접 호출도 거부되어야 함
   const denied = await core((c) => {
     try {
-      c.saveProfile('u_haneul', 'v_ioniq6', { recline: 90 });
+      c.saveProfile('u_haneul', 'v_ioniq5', { recline: 90 });
       return 'saved';
     } catch (e) {
       return e.name;
     }
   });
   ok(denied === 'PermissionError', '화면 우회 저장 시도도 PermissionError');
-  await page.selectOption('#f-vehicle', 'v_ioniq6b');
+  await page.selectOption('#f-vehicle', 'v_ioniq5b');
   await wait(150);
   ok(!(await page.locator('#f-recline').isDisabled()), '하늘, 34나 7890: 등받이 조작 가능 (차량별 권한)');
   ok(
@@ -151,7 +151,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await wait(150);
   await clickText('내 자리 설정');
   await wait(200);
-  await page.selectOption('#f-vehicle', 'v_ioniq6');
+  await page.selectOption('#f-vehicle', 'v_ioniq5');
   await wait(150);
   const seatMode = await page.evaluate(() => document.getElementById('set-seat').dataset.mode);
   const probe = await page.evaluate(() => window.__carpoom.seat3d.probe());
@@ -203,7 +203,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await wait(100);
   ok((await text()).includes('차량 응답 대기'), '적용 요청 → 응답 대기');
   await core((c) =>
-    c.handleVehicleEvent({ type: 'APPLY_RESULT', userId: 'u_youngsoo', vehicleId: 'v_ioniq6', ok: true }),
+    c.handleVehicleEvent({ type: 'APPLY_RESULT', userId: 'u_youngsoo', vehicleId: 'v_ioniq5', ok: true }),
   );
   await wait(150);
   ok((await text()).includes('차량 적용 완료'), '적용 성공 응답 반영');
@@ -219,7 +219,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await page.locator('#f-recline').fill('40');
   await page.locator('#f-recline').dispatchEvent('input');
   await wait(100);
-  await core((c) => c.setPermission('u_jimin', 'v_ioniq6', 'u_youngsoo', false));
+  await core((c) => c.setPermission('u_jimin', 'v_ioniq5', 'u_youngsoo', false));
   await wait(250);
   ok((await text()).includes('설정 변경 권한이 없어요'), '회수 안내 배너 즉시 표시');
   ok(
@@ -231,7 +231,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     '권한 없어진 초안은 버리고 저장값 표시',
   );
   await page.screenshot({ path: path.join(SHOTS, '07-permission-revoked.png') });
-  await core((c) => c.setPermission('u_jimin', 'v_ioniq6', 'u_youngsoo', true));
+  await core((c) => c.setPermission('u_jimin', 'v_ioniq5', 'u_youngsoo', true));
   await wait(250);
   ok(!(await page.locator('#f-recline').isDisabled()), '권한 재부여 즉시 반영');
 
@@ -500,7 +500,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await click('[data-action="scanQr"]');
   await wait(150);
   ok((await text()).includes('이 차량에 연결할까요'), '유효 QR → 승인 대기 (읽기만으로 연결 안 됨)');
-  const notYet = await core((c) => !c.state.pleosLinks['v_ioniq6']);
+  const notYet = await core((c) => !c.state.pleosLinks['v_ioniq5']);
   ok(notYet, '승인 전 미연결');
   await clickText('승인하고 연결');
   await wait(200);
@@ -671,7 +671,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       await visit(W + 'px 영수 · ' + v);
     }
     await p2core((c) => {
-      const b = c.createBooking('u_youngsoo', 'v_ioniq6', {
+      const b = c.createBooking('u_youngsoo', 'v_ioniq5', {
         lat: 37.498642,
         lng: 127.023415,
         label: '서초초등학교 앞',

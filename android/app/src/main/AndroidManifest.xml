@@ -38,6 +38,11 @@
             android:screenOrientation="sensorLandscape"
             android:taskAffinity="com.tikitacar.carpoom.car"
             android:theme="@style/CarTheme">
+            <!-- 주행 중에도 화면을 쓸 수 있다는 선언. 없으면 차량용 안드로이드가 주행 중 화면을 가린다.
+                 주행 중에는 좌석 조정을 막고 픽업 안내만 보여 준다 -->
+            <meta-data
+                android:name="distractionOptimized"
+                android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

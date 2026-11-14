@@ -15,12 +15,22 @@ const Brand = require('../carpoom-brand.js');
 const OUT = path.join(__dirname, '..', 'demo');
 fs.mkdirSync(OUT, { recursive: true });
 const NAME = process.env.VIDEO_NAME || '카품_시연영상';
-const STAGE = 'file:///' + path.join(__dirname, '..', 'dist', 'stage.html').split(path.sep).join('/');
+// demo/pleos-frame/에 에뮬레이터에서 캡처한 Pleos 화면(park.png, park_heat.png, park_heat_toast.png, drive.mp4)이 있으면,
+// 차량 앱을 그 Pleos Connect 화면의 앱 창 자리에 띄워 녹화한다(PLEOS_FRAME=0이면 쓰지 않음)
+const FRAME_DIR = path.join(__dirname, '..', 'demo', 'pleos-frame');
+const USE_FRAME = process.env.PLEOS_FRAME !== '0' && fs.existsSync(path.join(FRAME_DIR, 'park.png'));
+const STAGE =
+  'file:///' +
+  path.join(__dirname, '..', 'dist', 'stage.html').split(path.sep).join('/') +
+  (USE_FRAME ? '?frame=../demo/pleos-frame/' : '');
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 const K = Number(process.env.SCALE || 2); // 무대 확대 배율(2 = 4K)
 const FPS = 60;
+// (실험 기능) TIME_SCALE을 1보다 작게 주면 화면 속 시간을 S배로 느리게 돌려 녹화하고, 영상으로 만들 때 1/S배로 되돌린다.
+// 4K로 여러 화면을 함께 그리면 브라우저가 초당 그릴 수 있는 장면 수가 줄어드는데, 느리게 돌리면 장면 사이 움직임이 작아져 부드럽다
+const S = Number(process.env.TIME_SCALE || 1); // 1 = 실제 속도
 const FR = fs.mkdtempSync(path.join(os.tmpdir(), 'carpoom-frames-'));
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const wait = (ms) => new Promise((r) => setTimeout(r, ms / S));
 
 (async () => {
   const browser = await launch({ args: ['--use-angle=d3d11', '--ignore-gpu-blocklist'] });
@@ -38,23 +48,43 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     }
   }, K);
   // 데모 시나리오(퇴근 후 오후 5시대)에 맞춰 화면 시계를 맞춘다. 시간은 그대로 흐른다. 예: DEMO_TIME=17:40
-  const [hh, mm] = (process.env.DEMO_TIME || '17:40').split(':').map(Number);
+  const [hh, mm] = (process.env.DEMO_TIME || '17:37').split(':').map(Number);
   const demoNow = new Date();
   demoNow.setHours(hh, mm, 0, 0);
-  // 모든 화면(iframe 포함)의 Date만 앞뒤로 옮긴다. 애니메이션 타이머(requestAnimationFrame, performance.now)는 그대로 둔다.
-  await ctx.addInitScript((offset) => {
-    const RealDate = Date;
-    class DemoDate extends RealDate {
-      constructor(...a) {
-        if (a.length === 0) super(RealDate.now() + offset);
-        else super(...a);
+  // 모든 화면(iframe 포함)의 시계를 데모 시각으로 옮기고, 시간 흐름(Date, performance.now, 타이머, 애니메이션 프레임, 동영상)을 S배로 늦춘다.
+  // 모든 화면이 같은 기준 시각(T0)을 써서 화면 사이 시각이 어긋나지 않는다
+  await ctx.addInitScript(
+    ({ offset, T0, S }) => {
+      const RealDate = Date;
+      const now = () => T0 + (RealDate.now() - T0) * S + offset;
+      class DemoDate extends RealDate {
+        constructor(...a) {
+          if (a.length === 0) super(now());
+          else super(...a);
+        }
+        static now() {
+          return now();
+        }
       }
-      static now() {
-        return RealDate.now() + offset;
-      }
-    }
-    globalThis.Date = DemoDate;
-  }, demoNow.getTime() - Date.now());
+      globalThis.Date = DemoDate;
+      const rNow = performance.now.bind(performance);
+      const base = rNow();
+      const scaled = (t) => base + (t - base) * S;
+      performance.now = () => scaled(rNow());
+      const rST = window.setTimeout.bind(window),
+        rSI = window.setInterval.bind(window),
+        rRAF = window.requestAnimationFrame.bind(window);
+      window.setTimeout = (fn, ms, ...a) => rST(fn, (ms || 0) / S, ...a);
+      window.setInterval = (fn, ms, ...a) => rSI(fn, (ms || 0) / S, ...a);
+      window.requestAnimationFrame = (cb) => rRAF((t) => cb(scaled(t)));
+      const rPlay = HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play = function () {
+        this.playbackRate = S;
+        return rPlay.call(this);
+      };
+    },
+    { offset: demoNow.getTime() - Date.now(), T0: Date.now(), S },
+  );
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -67,7 +97,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await page.addStyleTag({
     content: `
     .links{display:none}
-    #cap{position:fixed;left:0;right:0;bottom:${44 * K}px;z-index:99;text-align:center;color:#fff;font:700 ${31 * K}px/1.45 "Asta Sans","Malgun Gothic",sans-serif;letter-spacing:-.01em;
+    #cap{position:fixed;left:0;right:0;bottom:${44 * K}px;z-index:99;text-align:center;color:#fff;font:700 ${26 * K}px/1.45 "Asta Sans","Malgun Gothic",sans-serif;letter-spacing:-.01em;
       text-shadow:0 ${2 * K}px ${3 * K}px rgba(0,0,0,.95),0 0 ${18 * K}px rgba(0,0,0,.9),0 0 ${36 * K}px rgba(0,0,0,.7);transition:opacity .3s;white-space:nowrap}
     #cap:empty{opacity:0}
     #cap b{color:#7CC2F4}
@@ -133,12 +163,14 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const frameOf = (k) =>
     page
       .frames()
-      .find((f) => f.url().includes(k === 'car' ? 'pleos' : k === 'dad' ? 'user=u_youngsoo' : 'user=u_haneul'));
+      .find((f) =>
+        f.url().includes(k === 'car' ? 'pleos-standalone' : k === 'dad' ? 'user=u_youngsoo' : 'user=u_haneul'),
+      );
   // 무대의 각 화면(iframe)은 축소되어 있으므로, 화면 안 좌표에 축소 비율을 곱해 무대 좌표로 바꾼다
   const IFR = { dad: '#f-dad', kid: '#f-kid', car: '#f-car' };
   const tap = async (k, sel, ms) => {
     const loc = frames[k].locator(sel).first();
-    await loc.waitFor({ state: 'visible', timeout: 15000 });
+    await loc.waitFor({ state: 'visible', timeout: 60000 / S });
     // 스크롤되는 본문(.content) 안의 요소만, 본문을 부드럽게 굴려 가운데로 가져온다(고정된 탭, 상단은 그대로)
     const moved = await loc.evaluate((el) => {
       const c = el.closest('.content');
@@ -167,7 +199,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const until = async (k, fn, timeout) => {
     const f = frameOf(k);
     const t0 = Date.now();
-    while (Date.now() - t0 < (timeout || 60000)) {
+    while (Date.now() - t0 < ((timeout || 60000) * 3) / S) {
       if (await f.evaluate(fn).catch(() => false)) return true;
       await wait(150);
     }
@@ -179,6 +211,8 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   let stopped = false,
     n = 0;
   const cdp = await ctx.newCDPSession(page);
+  await cdp.send('Animation.enable');
+  await cdp.send('Animation.setPlaybackRate', { playbackRate: S }); // CSS 애니메이션, 전환도 같은 속도로
   cdp.on('Page.screencastFrame', async ({ data, metadata, sessionId }) => {
     if (!stopped) {
       const buf = Buffer.from(data, 'base64');
@@ -207,23 +241,23 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await wait(900);
 
   // ① 로그인
-  await cap('퇴근한 <b>지민(워킹맘)</b>이 아이오닉 6에 탑니다. 차량 화면의 QR로 카품을 연결합니다', 3200);
+  await cap('퇴근한 <b>지민(워킹맘)</b>이 아이오닉 5에 탑니다. 차량 화면의 QR로 카품을 연결합니다.', 3200);
   await tap('car', '[data-act="demoScan"]', 1800);
-  await cap('연결되었습니다. 왼쪽 위는 <b>알림</b>, 왼쪽 아래는 <b>지도</b>, 오른쪽은 <b>좌석</b>입니다', 2800);
+  await cap('연결되었습니다. 왼쪽 위는 <b>알림</b>, 왼쪽 아래는 <b>지도</b>, 오른쪽은 <b>좌석</b>입니다.', 2800);
 
   // ② 아버지 요청
-  await cap('데이케어센터에 계신 <b>아버지(영수)</b>가 휴대폰으로 픽업을 요청합니다', 1500);
+  await cap('데이케어센터에 계신 <b>아버지(영수)</b>가 휴대폰으로 픽업을 요청합니다.', 1500);
   await tap('dad', '.nav [data-view="booking"]', 900);
   await tapText('dad', '네, 예약할게요', 1900);
   await tapText('dad', '내 위치 사용', 800);
   await tap('dad', '[data-action="locDecide"][data-v="1"]', 1300);
-  await cap('탑승 시간은 <b>지금 바로</b>, 좌석은 늘 앉던 <b>조수석(기억함)</b>입니다', 2300);
+  await cap('탑승 시간은 <b>지금 바로</b>, 좌석은 늘 앉던 <b>조수석(기억함)</b>입니다.', 2300);
   await tap('dad', '[data-action="confirmBooking"]', 1700);
-  await cap('차량 화면에 <b>픽업 요청</b>이 바로 표시됩니다', 2400);
+  await cap('차량 화면에 <b>픽업 요청</b>이 바로 표시됩니다.', 2400);
 
   // ③ 딸 요청
   await cap(
-    '학교에 있는 <b>딸(하늘)</b>은 시간을 <b>직접 입력</b>해 <b>18시</b>에 <b>뒷좌석 오른쪽</b>으로 요청합니다',
+    '학교에 있는 <b>딸(하늘)</b>은 시간을 <b>직접 입력</b>해 <b>18시</b>에 <b>뒷좌석 오른쪽</b>으로 요청합니다.',
     1500,
   );
   await tap('kid', '.nav [data-view="booking"]', 900);
@@ -231,49 +265,49 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await tapText('kid', '내 위치 사용', 800);
   await tap('kid', '[data-action="locDecide"][data-v="1"]', 1300);
   await tap('kid', '#f-bth', 300);
-  await page.keyboard.type('18', { delay: 180 });
+  await page.keyboard.type('18', { delay: 180 / S });
   await wait(250);
-  await page.keyboard.type('00', { delay: 180 });
+  await page.keyboard.type('00', { delay: 180 / S });
   await wait(700);
   await tap('kid', '.seatbtn[data-seat="RR"]', 1000);
   await tap('kid', '[data-action="confirmBooking"]', 1800);
 
   // ④ 수락, 좌석
-  await cap('운전자는 화면을 <b>한 번만</b> 눌러 수락합니다', 1200);
+  await cap('운전자는 화면을 <b>한 번만</b> 눌러 수락합니다.', 1200);
   await tap('car', '[data-act="accept"]', 1300);
-  await cap('아버지가 <b>기억한 조수석</b>을 이번에도 쓸지 묻습니다', 1600);
+  await cap('아버지가 <b>기억한 조수석</b>을 이번에도 쓸지 묻습니다.', 1600);
   await tap('car', '[data-act="memYes"]', 1000);
   await tap('car', '[data-act="accept"]', 1600);
 
   // ⑤ 순서 계획
   await cap(
-    '<b>시간과 위치를 함께 비교</b>해 순서를 정합니다. 학교가 더 가깝지만 아버지가 지금 기다리므로 먼저 갑니다',
+    '<b>시간과 위치를 함께 비교</b>해 순서를 정합니다. 학교가 더 가깝지만 아버지가 지금 기다리므로 먼저 갑니다.',
     4800,
   );
-  await cap('가족 휴대폰에도 <b>몇 번째로, 몇 시쯤</b> 도착하는지 바로 전달됩니다', 3200);
+  await cap('아버지와 딸의 휴대폰에도 <b>몇 번째로, 몇 시쯤</b> 도착하는지 바로 전달됩니다.', 3200);
 
   // ⑥ 안내 시작
   await frameOf('car').evaluate(() => {
     window.__pleos.ui.speed = 1.7;
     window.__pleos.ui.mismatchDemo = false;
   });
-  await cap('<b>안내를 시작</b>합니다. NaviHelper로 경유지 2곳(아버지와 딸)과 목적지(집)를 전달합니다', 1300);
+  await cap('<b>안내를 시작</b>합니다. NaviHelper로 경유지 2곳(아버지와 딸)과 목적지(집)를 전달합니다.', 1300);
   await tap('car', '[data-act="startDrive"]', 3600);
-  await cap('휴대폰 지도에서도 <b>차가 오는 모습</b>이 실시간으로 보입니다', 1000);
+  await cap('휴대폰 지도에서도 <b>차가 오는 모습</b>이 실시간으로 보입니다.', 1000);
   await until(
     'dad',
     () => window.__carpoom.core.state.notifications.some((n) => n.userId === 'u_youngsoo' && n.title === '곧 도착해요'),
     60000,
   );
-  await cap('<b>50m 전</b>에 아버지 휴대폰으로 <b>곧 도착해요</b> 알림을 보냅니다', 1000);
+  await cap('<b>50m 전</b>에 아버지 휴대폰으로 <b>곧 도착해요</b> 알림을 보냅니다.', 1000);
   await until('car', () => window.__pleos.ui.board && window.__pleos.ui.board.step === 'identify', 30000);
 
   // ⑦ 아버지 탑승
-  await cap('도착하면 <b>좌석 점유 센서</b>로 착석을 감지하고, 탄 사람이 화면에서 <b>본인</b>을 누릅니다', 2600);
+  await cap('도착하면 <b>좌석 점유 센서</b>로 착석을 감지하고, 탄 사람이 화면에서 <b>본인</b>을 누릅니다.', 2600);
   await tap('car', '[data-act="iam"]', 1300);
-  await cap('<b>조수석</b>에 앉았는지 확인합니다', 900);
+  await cap('<b>조수석</b>에 앉았는지 확인합니다.', 900);
   await tap('car', '[data-act="seatYes"]', 600);
-  await cap('<b>Vehicle SDK</b>로 아버지 자리의 등받이, 열선, 공조를 맞춥니다', 3800);
+  await cap('<b>Vehicle SDK</b>로 아버지 자리의 등받이, 열선, 공조를 맞춥니다.', 3800);
 
   // ⑧ 장애물 → 탑승 위치 변경
   await until(
@@ -283,23 +317,23 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   );
   await wait(1200);
   await frameOf('car').evaluate(() => window.__pleos.act.demoObstacle());
-  await cap('학교 앞에 <b>주정차 차량</b>이 있습니다. 딸에게 <b>45m 앞</b> 탑승 위치를 안내합니다', 2600);
+  await cap('학교 앞에 <b>주정차 차량</b>이 있습니다. 딸에게 <b>45m 앞</b> 탑승 위치를 안내합니다.', 2600);
   await tap('kid', '[data-action="confirmRelocation"]', 900);
-  await cap('딸이 <b>새 위치</b>를 확인하면 차량 경로가 바로 바뀝니다', 3000);
+  await cap('딸이 <b>새 위치</b>를 확인하면 차량 경로가 바로 바뀝니다.', 3000);
 
   // ⑨ 딸 탑승(다른 자리)
   await frameOf('car').evaluate(() => {
     window.__pleos.ui.mismatchDemo = true;
   });
-  await cap('이번에는 딸이 <b>예정과 다른 자리</b>에 앉은 경우입니다', 1000);
+  await cap('이번에는 딸이 <b>예정과 다른 자리</b>에 앉은 경우입니다.', 1000);
   await until('car', () => window.__pleos.ui.board && window.__pleos.ui.board.step === 'identify', 60000);
   await tap('car', '[data-act="iam"]', 1100);
   await tap('car', '[data-act="seatYes"]', 900);
-  await cap('예정 좌석과 다르므로 <b>좌석 배정과 설정값</b>을 바꿀지 묻습니다', 2600);
+  await cap('예정 좌석과 다르므로 <b>좌석 배정과 설정값</b>을 바꿀지 묻습니다.', 2600);
   await tap('car', '[data-act="mismatchFix"]', 600);
-  await cap('실제로 앉은 <b>뒷좌석 왼쪽</b>에 딸의 설정을 적용합니다', 4200);
+  await cap('실제로 앉은 <b>뒷좌석 왼쪽</b>에 딸의 설정을 적용합니다.', 4200);
   await until('car', () => window.__pleos.ui.done, 15000);
-  await cap('모두 탑승했습니다. 운전자는 <b>경로 검색도, 좌석 조작도 없이</b> 운전에만 집중합니다', 2600);
+  await cap('모두 탑승했습니다. 운전자는 <b>경로 검색도, 좌석 조작도 없이</b> 운전에만 집중합니다.', 2600);
   await tap('car', '[data-act="goHome"]', 4500);
   await cap('', 300);
 
@@ -314,7 +348,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const list = [];
   shots.forEach((s, i) => {
     const next = shots[i + 1];
-    list.push(`file '${s.f}'`, `duration ${((next ? next.t : s.t + 0.5) - s.t).toFixed(6)}`);
+    list.push(`file '${s.f}'`, `duration ${(((next ? next.t : s.t + 0.5) - s.t) * S).toFixed(6)}`);
   });
   list.push(`file '${shots[shots.length - 1].f}'`);
   fs.writeFileSync(path.join(FR, 'list.txt'), list.join('\n'));
@@ -371,7 +405,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     out1080,
   ]);
   fs.rmSync(FR, { recursive: true, force: true });
-  const dur = shots.length ? shots[shots.length - 1].t - shots[0].t + 0.5 : 0;
+  const dur = shots.length ? (shots[shots.length - 1].t - shots[0].t) * S + 0.5 : 0;
   console.log(
     'saved',
     out4k,

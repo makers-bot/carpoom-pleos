@@ -234,6 +234,327 @@
     height: 28px;
   }
 
+  /* ---------- 앱 모드(APK): Pleos Connect가 상태줄과 공조 막대를 직접 그리므로 앱은 앱 창만 채운다 ---------- */
+  :root[data-app] .statusbar,
+  :root[data-app] .dock {
+    display: none;
+  }
+  :root[data-app] .appwin {
+    top: 0;
+    bottom: 0;
+    padding-top: 12px;
+  }
+  :root[data-app] #display {
+    border-radius: 0;
+  }
+  /* 지도·전화·음악은 Pleos 시스템 메뉴가 맡으므로 왼쪽 메뉴를 두지 않는다. 좌석과 설정만 작은 버튼으로 남긴다 */
+  /* 알림과 지도는 세로 1:2, 차량 패널은 그 옆에 세로로 길게 */
+  /* 알림은 원래대로 패널 맨 아래에 두고, 차를 계기판과 알림(좌석 배정 알림 높이 169px) 사이 가운데로 옮긴다.
+     계기판 아래 ~ 차 위, 차 아래 ~ 알림 위 간격이 같아진다 */
+  :root[data-app] .car {
+    padding-bottom: 185px;
+  }
+  :root[data-app] .stats {
+    zoom: 1.3; /* 세로로 긴 앱 창에 맞춰 계기판을 키우고 차에 가깝게 내린다 */
+    padding-top: 64px;
+  }
+  :root[data-app] .alert {
+    zoom: 1.3; /* 넓어진 알림 칸에 맞춰 글자와 버튼을 함께 키운다 */
+  }
+  :root[data-app] .appwin {
+    grid-template-columns: 1fr 620px;
+    grid-template-rows: 1fr 2fr;
+    grid-template-areas: 'alert car' 'map car';
+  }
+  /* 시작 화면: 앱 창을 틈 없이 채우고, 영상과 QR을 크게 둔다 */
+  :root[data-app] .login {
+    grid-column: 1 / -1;
+    margin: -12px -18px -10px;
+    border-radius: 0;
+    box-shadow: none;
+    grid-template-columns: 1.7fr 1fr;
+    gap: 40px;
+    padding: 56px 72px 56px 84px;
+    align-items: center;
+  }
+  :root[data-app] .login > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  :root[data-app] .login .emb {
+    width: 132px;
+    height: 88px;
+  }
+  :root[data-app] .login .h1 {
+    font-size: 60px !important;
+    margin-top: 6px !important;
+  }
+  :root[data-app] .login .welcome {
+    font-size: 34px;
+    margin-top: -6px;
+  }
+  :root[data-app] .login .sub {
+    font-size: 23px !important;
+    margin-top: 0 !important;
+  }
+  :root[data-app] .login .steps {
+    margin-top: 6px;
+    gap: 18px;
+    font-size: 22px;
+  }
+  :root[data-app] .login .qrbox {
+    zoom: 1.32;
+    justify-self: center;
+    position: relative;
+    z-index: 2; /* 영상의 빛은 QR 카드 뒤로 지나간다 */
+  }
+  /* 요청을 기다리는 동안 보여 주는 플레이리스트 추천 */
+  .plist {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .plist-t {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .plist-t b {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .plist-l {
+    display: flex;
+    gap: 12px;
+  }
+  .pitem {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: none;
+    border-radius: 20px;
+    background: var(--panel-2);
+    color: var(--fg);
+    text-align: left;
+    min-width: 0;
+  }
+  .pnote {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--accent-soft, rgba(47, 140, 255, 0.16));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pitem.on {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+  .eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 20px;
+  }
+  .eq b {
+    width: 4px;
+    border-radius: 2px;
+    background: var(--accent);
+    animation: eq 0.9s ease-in-out infinite;
+  }
+  .eq b:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .eq b:nth-child(3) {
+    animation-delay: 0.45s;
+  }
+  @keyframes eq {
+    0%,
+    100% {
+      height: 6px;
+    }
+    50% {
+      height: 20px;
+    }
+  }
+  .pnote img {
+    width: 26px;
+    height: 26px;
+  }
+  .ptxt b {
+    display: block;
+    font-size: 22px;
+  }
+  .ptxt small {
+    display: block;
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .ptxt em {
+    display: block;
+    font-style: normal;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 6px;
+  }
+  /* 지난 알림: 최근 것부터 아래로 쌓이고, 오래될수록 작고 흐리다 */
+  .alog {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .alog-i {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: calc(16px - var(--i) * 1.6px);
+    opacity: calc(0.85 - var(--i) * 0.22);
+  }
+  .alog-i .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted-2);
+    flex: none;
+  }
+  .alog-i small {
+    margin-left: auto;
+    font-size: 0.85em;
+    font-weight: 500;
+  }
+  .welcome {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 6px;
+  }
+  /* 시작 화면 영상: 네모난 테두리 없이 가장자리가 배경으로 서서히 사라진다 */
+  .introvid {
+    position: relative;
+    width: 118%;
+    aspect-ratio: 16 / 9;
+    margin: -34px 0 -34px -9%;
+    /* 네 변에서 넓고 완만하게 옅어진다(가로, 세로 두 그라데이션의 겹침) */
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        rgba(0, 0, 0, 0.04) 4%,
+        rgba(0, 0, 0, 0.16) 9%,
+        rgba(0, 0, 0, 0.42) 15%,
+        rgba(0, 0, 0, 0.74) 21%,
+        #000 28%,
+        #000 72%,
+        rgba(0, 0, 0, 0.74) 79%,
+        rgba(0, 0, 0, 0.42) 85%,
+        rgba(0, 0, 0, 0.16) 91%,
+        rgba(0, 0, 0, 0.04) 96%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0,
+        rgba(0, 0, 0, 0.04) 4%,
+        rgba(0, 0, 0, 0.16) 9%,
+        rgba(0, 0, 0, 0.42) 15%,
+        rgba(0, 0, 0, 0.74) 21%,
+        #000 28%,
+        #000 72%,
+        rgba(0, 0, 0, 0.74) 79%,
+        rgba(0, 0, 0, 0.42) 85%,
+        rgba(0, 0, 0, 0.16) 91%,
+        rgba(0, 0, 0, 0.04) 96%,
+        transparent 100%
+      );
+    mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        rgba(0, 0, 0, 0.04) 4%,
+        rgba(0, 0, 0, 0.16) 9%,
+        rgba(0, 0, 0, 0.42) 15%,
+        rgba(0, 0, 0, 0.74) 21%,
+        #000 28%,
+        #000 72%,
+        rgba(0, 0, 0, 0.74) 79%,
+        rgba(0, 0, 0, 0.42) 85%,
+        rgba(0, 0, 0, 0.16) 91%,
+        rgba(0, 0, 0, 0.04) 96%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0,
+        rgba(0, 0, 0, 0.04) 4%,
+        rgba(0, 0, 0, 0.16) 9%,
+        rgba(0, 0, 0, 0.42) 15%,
+        rgba(0, 0, 0, 0.74) 21%,
+        #000 28%,
+        #000 72%,
+        rgba(0, 0, 0, 0.74) 79%,
+        rgba(0, 0, 0, 0.42) 85%,
+        rgba(0, 0, 0, 0.16) 91%,
+        rgba(0, 0, 0, 0.04) 96%,
+        transparent 100%
+      );
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  .introvid video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* 가장자리를 옅게 하면 영상이 따로 합성되므로, 밤 화면은 패널과 같은 바탕색을 깔고 그 위에 밝은 부분만 얹는다 */
+  :root[data-theme='dark'] .introvid {
+    background: #25272c;
+  }
+  :root[data-theme='dark'] .introvid video {
+    mix-blend-mode: screen;
+    filter: brightness(1.38) contrast(1.05);
+  }
+  .apptools {
+    position: absolute;
+    right: 22px;
+    bottom: 22px;
+    z-index: 6;
+    display: flex;
+    gap: 10px;
+  }
+  .apptools button {
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 18px;
+    background: var(--panel-2);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .car.has-prompt .apptools {
+    display: none;
+  }
+  .apptools button.on {
+    background: var(--accent);
+  }
+  .apptools button img {
+    width: 30px;
+    height: 30px;
+  }
+
   /* ---------- 앱 창 ---------- */
   .appwin {
     position: absolute;
@@ -1536,13 +1857,16 @@
       GEO = window.CarpoomGeo;
     const { CarpoomCore, BOOKING, ACTIVE_STATES, fmtHM } = C;
     const QS = new URLSearchParams(location.search);
+    // 앱 모드: APK(WebView)에서 ?app=1로 연다. Pleos Connect 앱 창 안에서 실행되는 경우다
+    const APP_MODE = QS.has('app');
+    if (APP_MODE) document.documentElement.dataset.app = '1';
     const display = document.getElementById('display'),
       app = document.getElementById('app'),
       overlay = document.getElementById('overlay');
 
     /* ===================== 상태, 동기화 (모바일 앱과 같은 코어) ===================== */
     const Storage = {
-      KEY: 'carpoom.state.v3',
+      KEY: 'carpoom.state.v4',
       PREF: 'carpoom.pleos.prefs.v1',
       load() {
         try {
@@ -1571,10 +1895,10 @@
       },
     };
     const loaded = Storage.load();
-    const core = new CarpoomCore({ state: loaded && loaded.version === 3 ? loaded : undefined, persist: Storage });
-    if (!loaded || loaded.version !== 3) core.seedDemo();
+    const core = new CarpoomCore({ state: loaded && loaded.version === 4 ? loaded : undefined, persist: Storage });
+    if (!loaded || loaded.version !== 4) core.seedDemo();
     const SYNC = window.CarpoomSync.attach(core, { appId: 'pleos', storageKey: Storage.KEY });
-    const VID = core.state.vehicles[QS.get('vehicle')] ? QS.get('vehicle') : 'v_ioniq6';
+    const VID = core.state.vehicles[QS.get('vehicle')] ? QS.get('vehicle') : 'v_ioniq5';
     const prefs = Storage.loadPrefs();
     const ui = {
       theme: ['dark', 'light'].includes(QS.get('theme')) ? QS.get('theme') : prefs.theme || 'dark',
@@ -1872,6 +2196,17 @@
             fadeDuration: 0,
             maxPitch: 70,
           });
+          // 그래픽 오류로 지도 그리기가 막히면(WebGL 컨텍스트 잃음) 단순 지도로 바꿔 지도 자리가 비지 않게 한다
+          S.map.on('webglcontextlost', () => {
+            const slot = S.el && S.el.parentNode;
+            try {
+              S.map.remove();
+            } catch (e) {}
+            S.map = null;
+            S.failed = true;
+            if (S.el) S.el.remove();
+            if (slot) mount(slot);
+          });
           S.map.on('style.load', () => {
             S.ready = true;
             layers();
@@ -1888,13 +2223,7 @@
         const m = S.map,
           dark = S.style === 'dark';
         if (dark) GEO.tuneDarkMap(m);
-        // 3D 건물은 도로, 철도 선보다 위(도로 이름 글씨보다는 아래)에 둔다. 그래야 도로 선이 건물 위로 지나가지 않는다
-        const LS = m.getStyle().layers;
-        let lastLine = -1;
-        LS.forEach((l, i) => {
-          if (l.type === 'line' && /^(highway|railway|road|aeroway)/.test(l.id)) lastLine = i;
-        });
-        const firstSymbol = (LS.find((l, i) => i > lastLine && l.type === 'symbol') || {}).id;
+        // 3D 건물은 도로 선과 도로 이름 글씨보다 위에 둔다. 그래야 선과 글씨가 건물 위로 지나가지 않는다
         // 지도 글씨를 한국어 이름으로(도로 번호 표지판은 그대로)
         m.getStyle().layers.forEach((l) => {
           if (
@@ -1937,7 +2266,7 @@
                   'fill-extrusion-vertical-gradient': true,
                 },
               },
-              firstSymbol,
+              undefined, // 맨 위에 그린다: 건물 뒤로 가려진 길의 이름이 건물을 뚫고 보이지 않는다
             );
           } catch (e) {}
         }
@@ -2054,7 +2383,7 @@
           drawFb();
           return;
         }
-        if (!S.map || points.length < 1) return;
+        if (!S.map || points.length < 1) return false;
         S.follow = false;
         const b = points.reduce(
           (bb, p) => bb.extend([p.lng, p.lat]),
@@ -2067,6 +2396,7 @@
           bearing: 0,
           duration: 900,
         });
+        return true;
       }
       function follow(car) {
         if (S.fb) {
@@ -2241,6 +2571,31 @@
         renderAll();
         return;
       }
+      // 지금 가는 탑승 위치만 같은 길 위로 조금 옮겨졌으면(주정차 차량 안내 등) 경로를 새로 받지 않고 그 지점에서 멈춘다.
+      // 길 찾기 서버가 옮긴 지점을 맞은편 차선에 붙이면 한 바퀴 돌아오는 먼 경로가 나오기 때문이다
+      const target = dv.stops[dv.idx],
+        tb = core.state.bookings[target];
+      const sameOrder =
+        plan.order.length === dv.stops.length - dv.idx && plan.order.every((id, i) => id === dv.stops[dv.idx + i]);
+      if (sameOrder && tb) {
+        const end = dv.route.legEnds[dv.idx] != null ? dv.route.legEnds[dv.idx] : dv.route.length;
+        let best = null;
+        for (let x = dv.d; x <= end; x += 5) {
+          const m = GEO.haversine(GEO.pointAlong(dv.route, x), tb.pickupPoint);
+          if (!best || m < best.m) best = { x, m };
+        }
+        if (best && best.m <= 15 && best.x > dv.d + 5) {
+          core.setRoutePlan(driverId(), VID, plan);
+          dv.route.legEnds[dv.idx] = best.x;
+          dv.keyMap = keyMapOf(plan);
+          dv.key = JSON.stringify(dv.keyMap);
+          dv.hazards = hazardsOf(dv.route);
+          toast('map', '탑승 위치가 바뀌어 새 위치에서 멈춰요');
+          renderAll();
+          loop();
+          return;
+        }
+      }
       dv.replanning = true;
       core.setRoutePlan(driverId(), VID, plan);
       const start = { lat: ui.car.lat, lng: ui.car.lng };
@@ -2330,7 +2685,7 @@
         raf = 0;
         const dv = ui.drive;
         if (!dv || dv.paused || dv.replanning) return;
-        const dt = Math.min(0.05, (now - last) / 1000);
+        const dt = Math.min(0.2, (now - last) / 1000); // 화면이 잠깐 느려져도 실제 시간만큼 따라간다(멈췄던 탭에서 돌아올 때 큰 점프만 막는다)
         last = now;
         const legEnd = dv.route.legEnds[dv.idx] != null ? dv.route.legEnds[dv.idx] : dv.route.length;
         const remain = legEnd - dv.d;
@@ -2472,6 +2827,7 @@
     <div class="clim r"><span style="color:var(--muted)">${I.fan}</span><span class="ar">‹</span>24°<span class="ar">›</span></div>`;
     }
     function rail() {
+      if (APP_MODE) return ''; // 앱 모드의 좌석, 설정 버튼은 좌석 패널 안에 둔다(carPanel)
       return `<nav class="panel rail" aria-label="카품 메뉴">
     <span class="brand">${EMBLEM('rl')}</span>
     <button class="${!ui.edit ? 'on' : ''}" data-act="railHome"><span class="ib">${rimg('home')}</span>운행</button>
@@ -2484,11 +2840,40 @@
   </nav>`;
     }
 
+    // 요청을 기다리는 동안: 퇴근길에 들을 플레이리스트를 권한다(앱 모드). 재생은 Pleos 음악 앱 연동 뒤에 지원한다
+    const PLAYLIST = [
+      { title: 'We wish', by: '현대자동차 x 이찬혁', tag: '퇴근길' },
+      { title: '돌아온 씽씽이', by: '현대자동차', tag: '아이와 함께' },
+    ];
+    function playlistRow() {
+      return `<div class="plist"><div class="plist-t"><b>플레이리스트</b>를 추천해 드릴까요?</div><div class="plist-l">${PLAYLIST.map(
+        (m, i) =>
+          `<button class="pitem ${ui.playing === i ? 'on' : ''}" data-act="playSuggest" data-i="${i}"><span class="pnote">${ui.playing === i ? '<i class="eq"><b></b><b></b><b></b></i>' : rimg('music')}</span><span class="ptxt"><b>${h(m.title)}</b><small>${h(m.by)}</small><em>${ui.playing === i ? '재생 중' : h(m.tag)}</em></span></button>`,
+      ).join('')}</div></div>`;
+    }
+
     // ---- 왼쪽 위: 알림, 픽업 배너, 핵심 버튼 ----
     function alertPanel() {
       const req = bookings([BOOKING.REQUESTED]);
-      const card = (inner, glow) =>
-        `<section class="panel alert ${glow ? 'glow' : ''} slidein" aria-label="알림">${inner}</section>`;
+      const card = (inner, glow) => {
+        let log = '';
+        if (APP_MODE) {
+          const m = /class="h1"[^>]*>([\s\S]*?)<\/div>/.exec(inner);
+          const title = m ? m[1].replace(/<[^>]+>/g, '').trim() : '';
+          if (title && title !== ui.alertNow) {
+            if (ui.alertNow) ui.alertLog = [{ t: ui.alertNow, at: Date.now() }].concat(ui.alertLog || []).slice(0, 3);
+            ui.alertNow = title;
+          }
+          if (ui.alertLog && ui.alertLog.length)
+            log = `<div class="alog" aria-label="지난 알림">${ui.alertLog
+              .map(
+                (a, i) =>
+                  `<div class="alog-i" style="--i:${i}"><span class="dot"></span><span>${h(a.t)}</span><small>${fmtHM(a.at)}</small></div>`,
+              )
+              .join('')}</div>`;
+        }
+        return `<section class="panel alert ${glow ? 'glow' : ''} slidein" aria-label="알림">${inner}${log}</section>`;
+      };
       // 1) 새 픽업 요청
       if (req.length) {
         const b = req[0],
@@ -2572,7 +2957,8 @@
       // 7) 대기
       return card(`<div class="eyebrow"><span class="dot"></span>카품</div>
     <div class="h1">${h(user(driverId()).name)}님, 퇴근길 안전 운전하세요</div>
-    <div class="sub">가족이 휴대폰으로 픽업을 요청하면 여기에 바로 떠요.</div>
+    <div class="sub">동승자가 휴대폰으로 픽업을 요청하면 여기에 바로 떠요.</div>
+    ${APP_MODE ? playlistRow() : ''}
     `);
     }
 
@@ -2741,6 +3127,11 @@
       ${gauge('st-remain', n ? n.progress : 0, n ? GEO.fmtDist(n.remain) : '—', n && !ui.drive.home ? '다음 픽업까지' : '남은 거리')}
     </div>
     <div class="carstage" id="carstage" data-seats='${h(JSON.stringify(Object.keys(seats)))}'>${carSVG(veh(), seats, mode)}<svg class="leaders" id="leaders"></svg>${seatLabels(seats)}</div>
+    ${
+      APP_MODE
+        ? `<nav class="apptools" aria-label="카품 메뉴"><button class="${ui.edit ? 'on' : ''}" data-act="${ui.edit ? 'railHome' : 'railSeat'}" aria-label="좌석 설정">${rimg('seat')}</button><button data-act="openDemo" aria-label="설정">${rimg('gear')}</button></nav>`
+        : ''
+    }
     ${promptHtml}
   </section>`;
     }
@@ -2851,7 +3242,7 @@
       const ps = pendingSeat();
       if (ps && ps.seatFromMemory && ps.seatId) {
         return box(`<div class="eyebrow"><span class="dot live"></span>좌석 배정, ${h(user(ps.userId).name)}님</div><div class="h2">기억한 ${h(seatLabel(ps.seatId))}을 이번에도 쓸까요?</div>
-      <div class="btns"><button class="btn primary" data-act="memYes" data-id="${ps.id}">네, ${h(seatLabel(ps.seatId))}</button><button class="btn" data-act="memNo" data-id="${ps.id}">다른 자리</button></div>`);
+      <div class="btns"><button class="btn primary" data-act="memYes" data-id="${ps.id}">네, ${h(seatLabel(ps.seatId))}으로 할게요</button><button class="btn" data-act="memNo" data-id="${ps.id}">다른 자리로 바꿀게요</button></div>`);
       }
       if (ps && !ps.seatId) {
         ui.seatPick = { bid: ps.id, remember: false };
@@ -2884,7 +3275,7 @@
     <div class="grid">
       <button class="btn sm" data-act="demoObstacle">장애물(탑승 위치 변경)</button>
       <button class="btn sm" data-act="toggleTheme">화면 색 바꾸기</button>
-      <button class="btn sm" data-act="demoRequests">가족 픽업 요청 받기</button>
+      <button class="btn sm" data-act="demoRequests">픽업 요청 받기</button>
       <button class="btn sm ${ui.speed > 1 ? 'primary' : ''}" data-act="toggleSpeed">빨리 감기 ${ui.speed > 1 ? '켜짐' : '꺼짐'}</button>
       <button class="btn sm ${ui.mismatchDemo ? 'primary' : ''}" data-act="toggleMismatch">다른 자리에 앉기 ${ui.mismatchDemo ? '켜짐' : '꺼짐'}</button>
       <button class="btn sm" data-act="logout">로그아웃(QR 다시)</button>
@@ -2899,8 +3290,9 @@
       return `${rail()}<section class="panel login" aria-label="로그인">
     <div><span class="emb" style="display:block">${EMBLEM('lg')}</span>
       <div class="h1" style="font-size:44px;margin-top:18px">카품을 시작할게요</div>
-      <div class="sub" style="font-size:21px;margin-top:8px">운전자 휴대폰으로 QR을 스캔하면 가족의 픽업 요청과 좌석 설정을 이 차에서 받을 수 있어요.</div>
-      <img class="carimg" src="${pimg('car-34')}" alt="${h(veh().name)}">
+      ${APP_MODE ? `<div class="welcome">어서 오세요, ${h(user(driverId()).name)}님</div>` : ''}
+      <div class="sub" style="font-size:21px;margin-top:8px">운전자 휴대폰으로 QR을 스캔하면 픽업 요청과 좌석 설정을 이 차에서 받을 수 있어요.</div>
+      ${APP_MODE ? '<div class="introvid" id="introvid"></div>' : `<img class="carimg" src="${pimg('car-34')}" alt="${h(veh().name)}">`}
       <div class="steps"><div><i>1</i>휴대폰에서 카품 앱 열기</div><div><i>2</i>Pleos 연결 → QR 스캔</div><div><i>3</i>휴대폰에서 연결 승인</div></div></div>
     <div class="qrbox"><div class="qrwrap">${qrSVG(ui.qr.code)}<svg class="ringt" viewBox="0 0 330 330"><circle cx="165" cy="165" r="160" fill="none" stroke="var(--panel-3)" stroke-width="6"/><circle id="qr-ring" cx="165" cy="165" r="160" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - rem / QR_TTL)}"/></svg></div>
       <div class="sub" id="qr-rem">${rem}초 뒤 새 QR로 바뀌어요, 코드 ${h(ui.qr.code)}</div>
@@ -2908,12 +3300,34 @@
   </section>`;
     }
     let qrTimer = 0;
+    // 시작 화면 영상(앱 모드): 밤 화면은 엑스레이, 낮 화면은 햇빛 아래의 차. 화면을 다시 그려도 이어서 재생되게 한 번만 만든다
+    let introEl = null;
+    function mountIntro() {
+      const slot = document.getElementById('introvid');
+      if (!slot) return;
+      const src = ui.theme === 'light' ? 'intro-day.mp4' : 'intro-night.mp4';
+      if (!introEl) {
+        introEl = document.createElement('video');
+        Object.assign(introEl, { muted: true, loop: true, autoplay: true, playsInline: true, preload: 'auto' });
+        introEl.setAttribute('aria-hidden', 'true');
+      }
+      // APK는 같은 폴더, 웹(dist/)은 저장소의 assets/pleos 폴더에서 불러온다
+      introEl.onerror = () => {
+        const cur = introEl.getAttribute('src') || '';
+        if (!cur.startsWith('../')) introEl.setAttribute('src', '../assets/pleos/' + cur);
+      };
+      if (!(introEl.getAttribute('src') || '').endsWith(src)) introEl.setAttribute('src', src);
+      slot.appendChild(introEl);
+      const p = introEl.play();
+      if (p && p.catch) p.catch(() => {});
+    }
     function renderAll() {
       display.querySelector('#statusbar').innerHTML = statusbar();
       display.querySelector('#dock').innerHTML = dock();
       clearInterval(qrTimer);
       if (!linked()) {
         app.innerHTML = loginView();
+        mountIntro();
         qrTimer = setInterval(() => {
           if (linked()) {
             clearInterval(qrTimer);
@@ -3147,6 +3561,14 @@
         toast('info', `${el.dataset.name} 앱은 시연에서 열지 않아요`);
       },
       // 장애물 체험: 다음 탑승 위치에 주정차 차량 → 경로 위 45m 앞 지점을 새 탑승 위치로 안내(동승자 확인 시 경로 다시 계산)
+      playSuggest(el) {
+        const m = PLAYLIST[+el.dataset.i];
+        if (!m) return;
+        // 재생 표시만 바꾼다(시연). 실제 재생은 Pleos 음악 앱 연동 뒤에 지원한다
+        ui.playing = ui.playing === +el.dataset.i ? null : +el.dataset.i;
+        toast('music', ui.playing == null ? '재생을 멈췄어요' : `${m.title}을(를) 재생해요`);
+        renderAll();
+      },
       demoObstacle() {
         ui.modal = null;
         renderOverlay();
@@ -3302,9 +3724,14 @@
       // innerWidth는 휴대폰에서 화면보다 넓은 내용이 있으면 커지므로, 실제로 보이는 크기(clientWidth)를 쓴다
       const vw = document.documentElement.clientWidth || innerWidth;
       const vh = document.documentElement.clientHeight || innerHeight;
-      const s = Math.min(vw / 1600, vh / 900);
-      display.style.transform = `translate(${(vw - 1600 * s) / 2}px,${(vh - 900 * s) / 2}px) scale(${s})`;
-      display.style.borderRadius = s < 1 && QS.has('embed') ? '0' : '22px';
+      // 앱 모드(APK)는 검은 여백 없이 창을 채운다: 1600×900을 기준으로 남는 쪽만 늘린다
+      const w = APP_MODE ? Math.max(1600, Math.round((900 * vw) / vh)) : 1600;
+      const hgt = APP_MODE ? Math.max(900, Math.round((1600 * vh) / vw)) : 900;
+      const s = Math.min(vw / w, vh / hgt);
+      display.style.width = w + 'px';
+      display.style.height = hgt + 'px';
+      display.style.transform = `translate(${(vw - w * s) / 2}px,${(vh - hgt * s) / 2}px) scale(${s})`;
+      display.style.borderRadius = APP_MODE || (s < 1 && QS.has('embed')) ? '0' : '22px';
     }
     addEventListener('resize', fit);
     fit();

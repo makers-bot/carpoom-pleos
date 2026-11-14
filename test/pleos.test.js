@@ -42,7 +42,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const text = () => page.locator('#display').innerText();
   const pl = (fn) => page.evaluate(fn);
   ok((await text()).includes('카품을 시작할게요') && (await page.locator('svg.qr').count()) === 1, 'QR 로그인 화면');
-  ok(await pl(() => !!window.__pleos.core.state.pleosQr.v_ioniq6), 'Pleos가 띄운 QR을 공유 상태에 올림(모바일 스캔용)');
+  ok(await pl(() => !!window.__pleos.core.state.pleosQr.v_ioniq5), 'Pleos가 띄운 QR을 공유 상태에 올림(모바일 스캔용)');
   await page.screenshot({ path: path.join(SHOTS, 'p01-login.png') });
   await page.click('[data-act="demoScan"]');
   await wait(1200);
@@ -80,7 +80,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   ok((await text()).includes('픽업 순서') && (await text()).includes('안내 시작'), '두 요청 수락 → 픽업 순서 카드');
   const order = await pl(() => {
     const c = window.__pleos.core;
-    const p = c.planPickups('v_ioniq6', { start: window.__pleos.ui.car, travel: window.CarpoomGeo.estRoadDistance });
+    const p = c.planPickups('v_ioniq5', { start: window.__pleos.ui.car, travel: window.CarpoomGeo.estRoadDistance });
     return p.order.map((id) => c.state.bookings[id].userId);
   });
   ok(order.join() === 'u_youngsoo,u_haneul', '아버지(지금 바로) → 딸(15분 뒤) 순서');
@@ -216,7 +216,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await car.locator('[data-act="demoScan"]').click();
   await wait(1000);
   ok(
-    await fr('user=u_youngsoo').evaluate(() => !!window.__carpoom.core.state.pleosLinks.v_ioniq6),
+    await fr('user=u_youngsoo').evaluate(() => !!window.__carpoom.core.state.pleosLinks.v_ioniq5),
     'Pleos 로그인 → 휴대폰 상태에도 반영',
   );
   await dad.locator('.nav [data-view="booking"]').click();

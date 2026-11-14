@@ -10,7 +10,7 @@ import android.view.WindowInsetsController;
 public class CarActivity extends WebAppActivity {
     @Override
     protected String page() {
-        return "pleos-standalone.html";
+        return "pleos-standalone.html?app=1";
     }
 
     @Override
