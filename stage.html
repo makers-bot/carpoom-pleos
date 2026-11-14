@@ -205,6 +205,24 @@
   .pf .off {
     opacity: 0;
   }
+  /* 캡처한 화면의 시계 자리를 덮고, 휴대폰과 같은 시각을 보여 준다 */
+  .pf .pfclock {
+    position: absolute;
+    left: calc(100% * 2398 / 2560);
+    top: calc(100% * 24 / 1440);
+    width: calc(100% * 160 / 2560);
+    height: calc(100% * 44 / 1440);
+    padding-left: calc(100% * 9 / 2560);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    background: #000;
+    color: #d4d4d4;
+    font-size: calc(1600px * var(--cs) * 29 / 2560);
+    font-weight: 400;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
   .stage.framed .carframe .scr {
     border-radius: 10px;
   }
@@ -308,6 +326,7 @@
           <img class="full off" id="pf-heat" alt="" />
           <img class="full off" id="pf-toast" alt="" />
           <video class="left off" id="pf-drive" muted loop playsinline preload="auto"></video>
+          <div class="pfclock" id="pf-clock"></div>
         </div>
         <iframe
           id="f-car"
@@ -341,6 +360,8 @@
       const d = new Date();
       const t = (d.getHours() % 12 || 12) + ':' + String(d.getMinutes()).padStart(2, '0');
       document.querySelectorAll('.pclock').forEach((e) => (e.textContent = t));
+      const car = document.getElementById('pf-clock');
+      if (car) car.textContent = t.padStart(5, '0') + (d.getHours() < 12 ? ' 오전' : ' 오후');
     }
     tick();
     setInterval(tick, 5000);
