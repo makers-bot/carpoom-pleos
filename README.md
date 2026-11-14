@@ -95,7 +95,7 @@
 
 ### Pleos Connect Emulator에서 실행
 
-차량 앱은 Pleos Connect의 앱 창 안에서 실행됩니다. 위쪽 상태 표시줄, 아래쪽 공조 및 앱 막대, 왼쪽 주행 정보 화면은 Pleos 시스템이 표시하므로, 앱은 남은 앱 창을 빈틈없이 채우고 밝은 화면과 어두운 화면에 맞춰 시작 화면 영상을 바꿉니다.
+차량 앱은 Pleos Connect의 앱 창 안에서 실행됩니다. 위쪽 상태 표시줄, 아래쪽 공조 및 앱 막대, 왼쪽 주행 정보 화면은 Pleos 시스템이 표시하므로, 앱은 남은 앱 창을 빈틈없이 채우고 밝은 화면과 어두운 화면에 맞춰 시작 화면 영상을 바꿉니다. 화면 색은 Pleos의 밝게, 어둡게 설정을 따르며 앱을 띄운 채 설정을 바꿔도 바로 반영됩니다.
 
 1. [Pleos Connect Emulator 설치 안내](https://document.pleos.ai/docs/connect/guide/getting-started/application-development/setup-connect-sdk-emulator)에 따라 Android Studio의 SDK Manager에서 Pleos Connect v2.1.0 시스템 이미지를 받고, AVD를 만들어 Cold boot로 실행합니다.
 2. `adb install apk/티키타카_카품_release.apk`로 설치한 뒤 앱 목록에서 **카품 Pleos**를 실행합니다.
@@ -130,6 +130,7 @@ URL 쿼리 매개변수로 시연 계정, 차량, 화면 테마를 지정할 수
 | 차량   | `theme=light`                   | 밝은 화면 테마 적용                                                                      |
 | 차량   | `app=1`                         | Pleos 앱 창에 맞춘 화면(APK에서 사용)                                                    |
 | 무대   | `frame=../demo/pleos-frame/`    | 에뮬레이터에서 캡처한 Pleos 화면 안에 차량 앱을 넣어 시연(캡처는 저장소에 포함하지 않음) |
+| 무대   | `cartheme=light`                | Pleos 틀 모드에서 차량 앱을 밝은 화면으로 표시(라이트 모드 캡처와 함께 사용)             |
 
 예: `carpoom-standalone.html?user=u_youngsoo&theme=light&nosplash=1`
 

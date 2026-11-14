@@ -231,6 +231,10 @@
     white-space: nowrap;
     letter-spacing: -0.01em;
   }
+  .pf.light .pfclock {
+    background: #f7f7f7;
+    color: #111;
+  }
   .stage.framed .carframe .scr {
     border-radius: 10px;
   }
@@ -379,7 +383,13 @@
     if (FRAME) {
       stage.classList.add('framed');
       const car = document.getElementById('f-car');
-      car.src = car.getAttribute('src').replace('embed=1', 'app=1');
+      // cartheme=light: 라이트 모드로 캡처한 Pleos 틀에 맞춰 차량 앱도 밝은 화면으로 띄운다
+      const light = new URLSearchParams(location.search).get('cartheme') === 'light';
+      car.src = car
+        .getAttribute('src')
+        .replace('embed=1', 'app=1')
+        .replace('theme=dark', light ? 'theme=light' : 'theme=dark');
+      if (light) document.getElementById('pf').classList.add('light');
       ['park', 'heat', 'toast', 'drive'].forEach((k) => (pf[k] = document.getElementById('pf-' + k)));
       pf.park.src = FRAME + 'park.png';
       pf.heat.src = FRAME + 'park_heat.png';

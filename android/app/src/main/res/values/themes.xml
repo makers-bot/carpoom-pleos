@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="car_background">#17181B</color>
+    <color name="car_background">#EDEEF2</color>
     <color name="mobile_background">#FFFFFF</color>
     <color name="icon_background">#07346B</color>
     <color name="icon_background_car">#17181B</color>
 
-    <!-- 차량 앱: 항상 어두운 화면에서 시작 -->
+    <!-- 차량 앱: Pleos가 밝게 설정이면 밝은 화면(어둡게 설정은 values-night) -->
     <style name="CarTheme" parent="@android:style/Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/car_background</item>
         <item name="android:statusBarColor">@color/car_background</item>

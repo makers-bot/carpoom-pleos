@@ -3572,8 +3572,10 @@ ${sel} .hh{transform:translateY(46px);opacity:0;animation:cpRise .8s cubic-bezie
     const SYNC = window.CarpoomSync.attach(core, { appId: 'pleos', storageKey: Storage.KEY });
     const VID = core.state.vehicles[QS.get('vehicle')] ? QS.get('vehicle') : 'v_ioniq5';
     const prefs = Storage.loadPrefs();
+    // APK는 Pleos(안드로이드)의 밝게/어둡게 설정을 sys로 넘겨 준다. 앱 안의 화면 색 설정보다 이것을 먼저 따른다
+    const SYS_THEME = ['dark', 'light'].includes(QS.get('sys')) ? QS.get('sys') : null;
     const ui = {
-      theme: ['dark', 'light'].includes(QS.get('theme')) ? QS.get('theme') : prefs.theme || 'dark',
+      theme: ['dark', 'light'].includes(QS.get('theme')) ? QS.get('theme') : SYS_THEME || prefs.theme || 'dark',
       speed: prefs.speed || 1,
       mismatchDemo: !!prefs.mismatchDemo,
       car: { lat: GEO.PLACES.office.lat, lng: GEO.PLACES.office.lng, bearing: 250 },
@@ -5426,6 +5428,10 @@ ${sel} .hh{transform:translateY(46px);opacity:0;animation:cpRise .8s cubic-bezie
     }
     headOnRoad();
     renderAll();
+    // 앱을 띄운 채 Pleos의 밝게/어둡게 설정을 바꾸면 CarActivity가 이 함수로 알려 준다
+    window.__setSysTheme = (t) => {
+      if (['dark', 'light'].includes(t) && t !== ui.theme) act.toggleTheme();
+    };
     // 디버그, 자동 테스트용 훅
     window.__pleos = {
       core,

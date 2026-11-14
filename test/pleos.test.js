@@ -199,6 +199,14 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await wait(600);
   ok((await pl(() => document.documentElement.dataset.theme)) === 'light', '밝게 전환');
   await page.screenshot({ path: path.join(SHOTS, 'p07-light.png') });
+  // APK: Pleos의 밝게/어둡게 설정(sys)을 앱 안 설정보다 먼저 따르고, 실행 중에 바뀌면 함께 바뀐다
+  await page.goto(url('pleos-standalone.html', '?app=1&sys=dark'));
+  await wait(1200);
+  const theme = () => page.evaluate(() => document.documentElement.dataset.theme);
+  ok((await theme()) === 'dark', 'APK: Pleos 어둡게 설정을 따라 시작(앱 안 설정은 밝게)');
+  await page.evaluate(() => window.__setSysTheme('light'));
+  await wait(500);
+  ok((await theme()) === 'light', 'APK: 실행 중 Pleos를 밝게 바꾸면 함께 바뀜');
   await ctx.close();
 
   console.log('\n[P6] 시연 무대: 휴대폰 2대 ↔ Pleos 실시간 연동');

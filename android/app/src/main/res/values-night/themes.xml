@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="mobile_background">#0B0D10</color>
+    <color name="car_background">#17181B</color>
 
     <!-- 모바일 앱: 휴대폰이 어둡게 설정이면 어두운 화면 -->
     <style name="MobileTheme" parent="@android:style/Theme.Material.NoActionBar">

@@ -17,12 +17,15 @@ fs.mkdirSync(OUT, { recursive: true });
 const NAME = process.env.VIDEO_NAME || '카품_시연영상';
 // demo/pleos-frame/에 에뮬레이터에서 캡처한 Pleos 화면(park.png, park_heat.png, park_heat_toast.png, drive.mp4)이 있으면,
 // 차량 앱을 그 Pleos Connect 화면의 앱 창 자리에 띄워 녹화한다(PLEOS_FRAME=0이면 쓰지 않음)
-const FRAME_DIR = path.join(__dirname, '..', 'demo', 'pleos-frame');
+// PLEOS_FRAME_DIR로 다른 캡처 폴더(예: 라이트 모드로 캡처한 pleos-frame-light)를, CAR_THEME=light로 밝은 차량 앱을 쓸 수 있다
+const FRAME_NAME = process.env.PLEOS_FRAME_DIR || 'pleos-frame';
+const FRAME_DIR = path.join(__dirname, '..', 'demo', FRAME_NAME);
+const CAR_LIGHT = process.env.CAR_THEME === 'light';
 const USE_FRAME = process.env.PLEOS_FRAME !== '0' && fs.existsSync(path.join(FRAME_DIR, 'park.png'));
 const STAGE =
   'file:///' +
   path.join(__dirname, '..', 'dist', 'stage.html').split(path.sep).join('/') +
-  (USE_FRAME ? '?frame=../demo/pleos-frame/' : '');
+  (USE_FRAME ? `?frame=../demo/${FRAME_NAME}/` + (CAR_LIGHT ? '&cartheme=light' : '') : '');
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 const K = Number(process.env.SCALE || 2); // 무대 확대 배율(2 = 4K)
 const FPS = 60;
@@ -138,6 +141,9 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms / S));
         document.body.appendChild(el);
       }
       el.className = t ? '' : team ? 'only still' : 'only';
+      // 첫 로고가 화면을 다 덮는 동안에는 뒤의 무대를 그리지 않게 해, 로고가 그려지는 움직임을 끊김 없이 담는다
+      const st = document.getElementById('stage');
+      if (st && !team) st.style.visibility = 'hidden';
       el.innerHTML =
         emb +
         (t ? `<div class="t">${t}</div><div class="s">${s}</div>${k ? `<div class="k">${k}</div>` : ''}` : '') +
@@ -145,6 +151,8 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms / S));
     };
     window.__hideCard = () => {
       const el = document.getElementById('card');
+      const st = document.getElementById('stage');
+      if (st) st.style.visibility = '';
       if (el) {
         el.className = el.className + ' hide';
         setTimeout(() => el.remove(), 900);
