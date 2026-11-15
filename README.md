@@ -14,7 +14,7 @@
 | 한 줄 소개 | 동승자의 탑승 예약과 개인별 차량 설정을 연결하는 픽업 서비스                                                            |
 | APK        | [`apk/티키타카_카품_release.apk`](apk/티키타카_카품_release.apk) (release 버전, Android 9 이상)                         |
 | 실행 방법  | [4. 시연 실행 방법](#4-시연-실행-방법) 참고. 브라우저에서는 [`dist/stage.html`](dist/stage.html)을 열면 바로 시연됩니다 |
-| 시연 영상  | [YouTube에서 보기](https://www.youtube.com/watch?v=GADchNKkOeY)                                                         |
+| 시연 영상  | [YouTube에서 보기](https://www.youtube.com/watch?v=AJHt99DZuWQ)                                                         |
 
 ## 1. 기획 목적 및 이용 대상
 
